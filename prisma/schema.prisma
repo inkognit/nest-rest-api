@@ -1,11 +1,34 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "postgres"
+//  url      = env("LOCAL_DATABASE_URL")
+ url = "postgres://admin:192837465@localhost:5432/infinity?sslmode=prefer"
+// url = "postgres://first_test__1751:p0bbAKFhkEaRtso-pOuW@first-test--1751.postgresql.a.osc-fr1.scalingo-dbs.com:33418/first_test__1751?sslmode=prefer"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  email     String   @unique
+  name      String
+  role      Role     @default(USER)
+  pass      Pass?
+  refresh   String?
+}
+
+model Pass {
+  id       String @id @default(cuid())
+  user_id  String @unique
+  password String
+  user     User   @relation(fields: [user_id], references: [id])
+
+  @@unique([user_id, password])
+}
+
+enum Role {
+  USER
+  ADMIN
 }
